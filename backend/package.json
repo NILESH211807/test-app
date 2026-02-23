@@ -48,10 +48,13 @@
     "mongoose-field-encryption": "^7.0.1",
     "multer": "^2.0.2",
     "nodemailer": "^8.0.1",
+    "prom-client": "^15.1.3",
     "random-id": "^1.0.4",
     "react-data-grid": "^7.0.0-beta.59",
+    "response-time": "^2.3.4",
     "uuid": "^13.0.0",
     "winston": "^3.19.0",
+    "winston-loki": "^6.1.4",
     "xlsx": "^0.18.5"
   }
 }

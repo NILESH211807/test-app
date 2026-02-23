@@ -5,6 +5,10 @@ dotenv.config();
 // require("./telemetry/metrics");
 
 const express = require("express");
+const client = require("prom-client");
+const responseTime = require("response-time");
+const { createLogger, transports } = require("winston");
+const LokiTransport = require("winston-loki");
 
 const cookieParser = require("cookie-parser");
 const { expressMiddleware } = require("@as-integrations/express5");
@@ -22,8 +26,9 @@ const oauthRoute = require("./routes/oauth.route");
 const errorHandler = require("./middlewares/errorHandler");
 
 const helmet = require("helmet");
-// const { encrypt } = require("./utils/encryption");
 const logger = require("./logger");
+// const { encrypt } = require("./utils/encryption");
+// const logger = require("./logger");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -32,6 +37,19 @@ const UPLOAD_DIR = path.join(__dirname, "uploads");
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
+
+// const options = {
+//   transports: [
+//     new LokiTransport({
+//       host: "http://127.0.0.1:3100",
+//     }),
+//   ],
+// };
+// const logger = createLogger(options);
+
+const register = new client.Registry();
+
+client.collectDefaultMetrics({ register });
 
 console.log(process.env.FRONTEND_URL);
 app.use(
@@ -57,16 +75,47 @@ app.use(
   }),
 );
 
-// Request logging middleware
-app.use((req, res, next) => {
-  logger.info(`Incoming request: ${req.method} ${req.path}`, {
-    method: req.method,
-    path: req.path,
-    ip: req.ip,
-    userAgent: req.get("user-agent"),
-  });
-  next();
+// Create a histogram metric to track request response times
+const requestResponseTime = new client.Histogram({
+  name: "http_request_response_time_seconds",
+  help: "Histogram of request response times in ms",
+  labelNames: ["method", "route", "status_code"],
+  buckets: [50, 100, 200, 300, 400, 500, 1000, 2000],
+  registers: [register],
 });
+
+const httpRequestDuration = new client.Histogram({
+  name: "http_request_duration_seconds",
+  help: "Duration of HTTP requests in seconds",
+  labelNames: ["method", "route", "status_code"],
+  buckets: [0.1, 0.5, 1, 2.5, 5, 10],
+  registers: [register],
+});
+
+app.use(
+  responseTime((req, res, time) => {
+    const end = httpRequestDuration.startTimer();
+
+    requestResponseTime
+      .labels(req.method, req.route?.path || req.url, res.statusCode)
+      .observe(time);
+
+    res.on("finish", () => {
+      end({
+        method: req.method,
+        route: req.route?.path || req.url,
+        status_code: res.statusCode,
+      });
+    });
+
+    logger.info(`Incoming request: ${req.method} ${req.path}`, {
+      method: req.method,
+      path: req.path,
+      ip: req.ip,
+      userAgent: req.get("user-agent"),
+    });
+  }),
+);
 
 app.use("/api", frontendErrorRoute);
 app.use("/api/admin", adminRoute);
@@ -114,6 +163,11 @@ app.get("/", (req, res) => {
 });
 
 // saveUserToDatabase();
+
+app.get("/metrics", async (req, res) => {
+  res.setHeader("Content-Type", register.contentType);
+  res.send(await register.metrics());
+});
 
 //
 app.use(errorHandler);
