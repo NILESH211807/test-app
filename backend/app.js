@@ -22,7 +22,7 @@ const oauthRoute = require("./routes/oauth.route");
 const errorHandler = require("./middlewares/errorHandler");
 
 const helmet = require("helmet");
-const { encrypt } = require("./utils/encryption");
+// const { encrypt } = require("./utils/encryption");
 const logger = require("./logger");
 
 const app = express();
@@ -33,6 +33,7 @@ if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
 
+console.log(process.env.FRONTEND_URL);
 app.use(
   cors({
     origin: [process.env.FRONTEND_URL],
