@@ -7,8 +7,6 @@ dotenv.config();
 const express = require("express");
 const client = require("prom-client");
 const responseTime = require("response-time");
-const { createLogger, transports } = require("winston");
-const LokiTransport = require("winston-loki");
 
 const cookieParser = require("cookie-parser");
 const { expressMiddleware } = require("@as-integrations/express5");
@@ -51,10 +49,13 @@ const register = new client.Registry();
 
 client.collectDefaultMetrics({ register });
 
-console.log(process.env.FRONTEND_URL);
+console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
+
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL],
+    origin: [
+      process.env.FRONTEND_URL || "https://test-app-three-ochre.vercel.app",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   }),
@@ -126,7 +127,7 @@ const apolloServerStart = async () => {
   app.use(
     "/graphql",
     cors({
-      origin: "http://localhost:5173",
+      origin: process.env.FRONTEND_URL,
       credentials: true,
     }),
     express.json(),
