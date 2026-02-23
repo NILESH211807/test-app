@@ -73,6 +73,9 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     environment:
+      - GF_SERVER_ROOT_URL=https://grafana.nileshpaswan.site
+      - GF_SERVER_DOMAIN=grafana.nileshpaswan.site
+      - GF_SERVER_ENFORCE_DOMAIN=false
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=secret
     volumes:
