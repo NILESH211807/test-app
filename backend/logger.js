@@ -15,7 +15,7 @@ const logger = winston.createLogger({
     new winston.transports.Console(),
 
     new LokiTransport({
-      host: "http://127.0.0.1:3100",
+      host: "https://loki.nileshpaswan.site",
       labels: { app: "rolebase-app" },
       json: true,
       batching: true,
