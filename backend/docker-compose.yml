@@ -89,21 +89,35 @@ services:
     networks:
       - observability
 
-  # frontend:
-  #   build: ../frontend
-  #   container_name: frontend
-  #   env_file: ../frontend/.env
-  #   ports:
-  #     - "5173:5173"
-  # networks:
-  #   - observability
-  # depends_on:
-  #   - backend
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    restart: unless-stopped
+    networks:
+      - observability
+
+  # promtail:
+  #   image: grafana/promtail:latest
+  #   container_name: promtail
+  #   command: -config.file=/etc/promtail/promtail-config.yaml
+  #   volumes:
+  #     - ./promtail-config.yaml:/etc/promtail/promtail-config.yaml
+  #     - /var/log:/var/log
+  #     - /var/lib/docker/containers:/var/lib/docker/containers:ro
+  #   restart: unless-stopped
+  #   networks:
+  #     - observability
+  #   depends_on:
+  #     - loki
 volumes:
   prometheus_data:
   tempo_data:
   grafana_data:
   redis_data:
+  loki_data:
 
 networks:
   observability:
