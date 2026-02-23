@@ -86,16 +86,16 @@ services:
     networks:
       - observability
 
-  frontend:
-    build: ../frontend
-    container_name: frontend
-    env_file: ../frontend/.env
-    ports:
-      - "5173:5173"
-    # networks:
-    #   - observability
-    # depends_on:
-    #   - backend
+  # frontend:
+  #   build: ../frontend
+  #   container_name: frontend
+  #   env_file: ../frontend/.env
+  #   ports:
+  #     - "5173:5173"
+  # networks:
+  #   - observability
+  # depends_on:
+  #   - backend
 volumes:
   prometheus_data:
   tempo_data:
