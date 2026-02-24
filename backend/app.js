@@ -181,6 +181,12 @@ app.get("/slow", (req, res) => {
   }, 3000);
 });
 
+app.get("/fast", (req, res) => {
+  res.json({
+    message: "This is a fast response",
+  })
+}
+
 // saveUserToDatabase();
 
 app.get("/metrics", async (req, res) => {
