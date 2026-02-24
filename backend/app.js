@@ -184,8 +184,8 @@ app.get("/slow", (req, res) => {
 app.get("/fast", (req, res) => {
   res.json({
     message: "This is a fast response",
-  })
-}
+  });
+});
 
 // saveUserToDatabase();
 
