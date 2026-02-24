@@ -1,26 +1,30 @@
-name: Deploy backend app
+name: Deploy node app
 
 on:
-push:
-branches:
-  - master
-paths:
-  - "backend/**"
+  push:
+    branches:
+      - master
+    path:
+      - "backend/**"
+      - "docker-compose.yml"
 
 jobs:
-deploy:
-runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest
 
-steps:
-  - name: Deploy to server
-    uses: appleboy/ssh-action@v1.0.3
-    with:
-      host: ${{ secrets.SSH_HOST }}
-      username: ${{ secrets.SSH_USER }}
-      key: ${{ secrets.SSH_KEY }}
-      port: 2775
-      script: |
-        cd /root/test-app
-        git pull origin master
-        docker compose down
-        docker compose up -d --build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 2775
+          script: |
+            cd /root/test-app
+            git pull origin master
+            docker compose down
+            docker compose up -d --build
