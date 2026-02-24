@@ -1,0 +1,27 @@
+name: Deploy backend app
+
+on:
+push:
+branches:
+  - master
+paths:
+  - "backend/**"
+
+jobs:
+deploy:
+runs-on: ubuntu-latest
+
+steps:
+  - name: Deploy to server
+    uses: appleboy/ssh-action@v1.0.3
+    with:
+      host: ${{ secrets.SSH_HOST }}
+      username: ${{ secrets.SSH_USER }}
+      key: ${{ secrets.SSH_KEY }}
+      port: 2775
+      script: |
+        cd /root/test-app
+        git fetch origin master
+        git reset --hard origin/master
+        docker compose down
+        docker compose up -d --build
