@@ -160,7 +160,7 @@ const apolloServerStart = async () => {
 apolloServerStart();
 
 app.get("/", (req, res) => {
-  res.send("Hello...");
+  res.send("Welcome to the Role-Based Access Control API");
 });
 
 // saveUserToDatabase();
