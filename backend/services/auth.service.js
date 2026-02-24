@@ -147,7 +147,15 @@ module.exports.loginUser = async (data, res) => {
 
 // logout
 module.exports.logoutUser = async (res) => {
-  res.clearCookie("token");
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
+
+  res.clearCookie("token", cookieOptions);
+
   return {
     success: true,
     message: "Logout successful",
