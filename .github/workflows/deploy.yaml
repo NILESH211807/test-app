@@ -6,8 +6,6 @@ on:
       - master
     paths:
       - "backend/**"
-      - "docker-compose.yml"
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
