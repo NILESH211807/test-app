@@ -21,7 +21,6 @@ steps:
       port: 2775
       script: |
         cd /root/test-app
-        git fetch origin master
-        git reset --hard origin/master
+        git pull origin master
         docker compose down
         docker compose up -d --build
