@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-    path:
+    paths:
       - "backend/**"
       - "docker-compose.yml"
 
