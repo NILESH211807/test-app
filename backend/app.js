@@ -175,6 +175,12 @@ app.get("/error", (req, res) => {
   }
 });
 
+app.get("/slow", (req, res) => {
+  setTimeout(() => {
+    res.send("This is a slow response");
+  }, 3000);
+});
+
 // saveUserToDatabase();
 
 app.get("/metrics", async (req, res) => {
