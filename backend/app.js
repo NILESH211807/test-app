@@ -160,7 +160,19 @@ const apolloServerStart = async () => {
 apolloServerStart();
 
 app.get("/", (req, res) => {
-  res.send("Welcome to Website!");
+  res.send("Welcome to Website 2.0");
+});
+
+app.get("/error", (req, res) => {
+  try {
+    throw new Error("This is a test error");
+  } catch (error) {
+    logger.error("An error occurred", {
+      message: error.message,
+      stack: error.stack,
+    });
+    res.status(500).json({ message: "An error occurred" });
+  }
 });
 
 // saveUserToDatabase();
